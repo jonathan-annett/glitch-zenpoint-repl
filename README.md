@@ -1,3 +1,26 @@
+#glitch-zenpoint-repl
+
+based on zenpoint (see below)
+
+to add to your glitch project:
+
+    {
+        "dependancies" : {
+        "glitch-zenpoint-repl": "github:jonathan-annett/glitch-zenpoint-repl#73273b26efba37391b0d7bfd7c96f266eb009114"
+        }
+    }
+
+
+and place this line just before your `app.listen` line in server.js
+
+
+    require("glitch-zenpoint-repl")(app,express); 
+
+
+
+
+original documentation
+
 # Zenpoint
 
 An open window into your running nodejs code.
