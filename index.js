@@ -176,6 +176,7 @@ function zenpoint(options) {
                          srv.close();
                     }
                 });
+                require('repl.history')(cmd,  process.env.REPL_HISTORY ||  process.env.HOME + '/.repl_history');
                 if (options.inspectDepth !== undefined)  {
                     inspectOptions.depth = options.inspectDepth;
                 }
