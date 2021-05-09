@@ -2,7 +2,7 @@
 
 based on zenpoint (see below)
 
-to add to your glitch project:
+to add to your glitch project, add ` "glitch-zenpoint-repl": "github:jonathan-annett/glitch-zenpoint-repl#73273b26efba37391b0d7bfd7c96f266eb009114"` to package.json:
 
     {
         "dependancies" : {
