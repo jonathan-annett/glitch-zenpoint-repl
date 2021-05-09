@@ -152,8 +152,8 @@ function zenpoint(options) {
                 socket.write(Buffer.from([255, 251, 1, 255, 251, 3, 255, 252, 34]));
                 socket.write(
                     '🐀🧘🐁 Welcome to the Zenpoint 🥑🐦🦐' + netEOL +
-                        stack+netEOL+
-                    'use Ctrl-D to exit to the Glitch Terminal');
+                        stack + netEOL+ netEOL+
+                    'use Ctrl-D to exit to the Glitch Terminal' + netEOL + netEOL);
          
                 var cmd = repl.start({
                     ...replOptions,
@@ -190,7 +190,65 @@ function zenpoint(options) {
                     });
                 }
                 cmd.context.frozen =  CircularJSON.parse(CircularJSON.stringify(options.context));
-              
+                
+                if (cmd.context.__filename === undefined) {
+                  Object.defineProperties(cmd.context, {
+                     __filename :{
+                        value : "repl",
+                        enumerable : false,
+                       writable : false
+
+                     },
+
+                    exit : {
+                         get : function (){
+
+                            connection.write("Tip : To exit, you can use Ctrl - D"+netEOL);
+                            connection.elsewhere=true;
+                            connection.end();
+                            connection=false;
+                            return function(){
+                               return "dumping connection";
+                           };
+                         },
+                         enumerable : false
+                      },
+                     refresh : {
+                         get : function (){
+
+                            connection.write("Refreshing the glitch browser, This will drop you out of the REPL"+netEOL);
+
+                            const { execFile } = require('child_process');
+                            const child = execFile('/usr/bin/refresh', [], (error, stdout, stderr) => {
+                              if (error) {
+                                throw error;
+                              }
+                              console.log(stdout);
+                            }); 
+                            return function(){
+                               return "refreshing browser";
+                           };
+                         },
+                         enumerable : false
+                      },
+                      restart : {
+                         get : function (){
+
+                            connection.write("Restarting the server process. This will drop you out of the REPL"+netEOL);
+                            process.exit();
+
+                            connection.elsewhere=true;
+                            connection.end();
+                            connection=false;
+                            return function(){
+                               return "dumping connection";
+                           };
+                         },
+                         enumerable : false
+                      }
+                  });
+                }
+                
                 if (typeof options.log_eval==='function' || typeof options.log_eval_result === ' function') {
                   customEval.wrapped = cmd.eval;
                   cmd.eval = customEval;
@@ -233,7 +291,7 @@ function glitchREPL(context,port) {
     
     zenpoint.rsrv = zenpoint(opts);
        
-    fs.writeFile('/app/repl',`#/bin/bash\n\nsource /app/.env\ntelnet localhost ${opts.listen}\necho "use /app/repl restart the REPL'`,function (){
+    fs.writeFile('/app/repl',`#/bin/bash\n\nsource /app/.env\ntelnet localhost ${opts.listen}\necho "use /app/repl restart the REPL"`,function (){
        fs.chmod('/app/repl', 0o777, function (){
            fs.writeFile('/app/.profile',`#/bin/bash\n\n/app/repl`,function (){
                 
@@ -249,11 +307,8 @@ zenpoint.express = function(app,express,cont) {
   
   const context = cont || {};
   context.app = app;
-  context.express = express;
-  context.restart = function () {
-     process.exit(); 
-  };
-   
+  context.express = express;  
+    
   glitchREPL(context,process.env.REPL_PORT);
   
 } ; 
