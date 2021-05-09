@@ -297,6 +297,7 @@ function zenpoint(options) {
            if (connection) {
                if (!connection.elsewhere) connection.write(msg+netEOL);  
            }
+         }
        }
     }
 }
