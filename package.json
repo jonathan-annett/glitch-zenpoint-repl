@@ -1,24 +1,26 @@
 {
-    "name": "zenpoint",
-    "description": "Zenpoint, the debugging helper for zen fellas!",
+    "name": "glitch-zenpoint-repl",
+    "description": "Zenpoint, the debugging helper for zen fellas, glitch edition!",
     "version": "0.0.1",
     "engines": {
         "node": ">=6.9.5"
     },
-    "repository": "ploki/Zenpoint",
+    "repository": {
+      "url": "https://github.com/jonathan-annett/glitch-zenpoint-repl",
+      "type": "git"
+    },
     "keywords": [
         "debug",
         "repl",
         "telnet",
-        "server",
-        "backdoor"
-    ],
-    "author": "Guillaume Gimenez <ploki@blackmilk.fr>",
+        "server"
+     ],
+    "author": "Jonathan Annett, based on work from Guillaume Gimenez",
     "license": "Apache-2.0",
     "bugs": {
-        "url": "https://github.com/ploki/Zenpoint/issues"
+        "url": "https://github.com/jonathan-annett/glitch-zenpoint-repl/issues"
     },
-    "homepage": "https://github.com/ploki/Zenpoint#readme",
+    "homepage": "https://github.com/jonathan-annett/glitch-zenpoint-repl#readme",
     "dependencies": {
         "chalk": "^2.4.2",
         "flatted": "^2.0.0",
