@@ -1,0 +1,27 @@
+{
+    "name": "zenpoint",
+    "description": "Zenpoint, the debugging helper for zen fellas!",
+    "version": "0.0.1",
+    "engines": {
+        "node": ">=6.9.5"
+    },
+    "repository": "ploki/Zenpoint",
+    "keywords": [
+        "debug",
+        "repl",
+        "telnet",
+        "server",
+        "backdoor"
+    ],
+    "author": "Guillaume Gimenez <ploki@blackmilk.fr>",
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/ploki/Zenpoint/issues"
+    },
+    "homepage": "https://github.com/ploki/Zenpoint#readme",
+    "dependencies": {
+        "chalk": "^2.4.2",
+        "flatted": "^2.0.0",
+        "unique-slug": "^2.0.1"
+    }
+}
