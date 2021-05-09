@@ -313,7 +313,7 @@ function glitchREPL(context,port) {
        
     fs.writeFile('/app/repl',`#/bin/bash\n\nsource /app/.env\ntelnet localhost ${
                  
-                 !!process.env.REPL_PORT ? 
+                 process.env.REPL_PORT ? 
                  "$REPL_PORT" : // if env is set, don't write actual port to bash file (security issue)            
                  opts.listen
                  }\necho "use /app/repl restart the REPL"`,function (){
