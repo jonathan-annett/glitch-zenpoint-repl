@@ -6,6 +6,7 @@ customized version of zenpoint REPL, for Glitch, based on https://github.com/plo
 */
 
 const os = require('os');
+const fs = require('fs');
 const net = require('net');
 const repl = require('repl');
 const chalk = require('chalk');
@@ -221,14 +222,24 @@ module.exports = zenpoint;
 
 function glitchREPL(context,port) {
     context = context || {};
-   
-    zenpoint.rsrv = zenpoint({
+    const opts = {
         listen: port || 1976,
         inspectDepth: 0,
         persist: true,
         context: context,
         connect_ips: [ '::ffff:127.0.0.1']
+    };
+    
+    zenpoint.rsrv = zenpoint(opts);
+       
+    fs.writeFile('/app/repl',`#/bin/bash\n\nsource /app/.env\ntelnet localhost ${opts.listen}`,function (){
+       fs.chmod('/app/repl', 0o777, function (){
+           fs.writeFile('/app/.profile',`#/bin/bash\n\n/app/repl`,function (){
+                
+            });
+          });
     });
+
     return zenpoint.rsrv ;
 }
 
