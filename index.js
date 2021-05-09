@@ -287,12 +287,16 @@ function zenpoint(options) {
          
          close : function(){
             if (connection) {
-               if (!connection.elsewhere) connection.write("REPL socket server shutdown\n");  
+               if (!connection.elsewhere) connection.write("REPL socket server shutdown"+netEOL);  
               connection=undefined;
             }
          
             srv.close();
-         }
+         },
+         message : function (msg) {
+           if (connection) {
+               if (!connection.elsewhere) connection.write(msg+netEOL);  
+           }
        }
     }
 }
