@@ -10,11 +10,23 @@ to add to your glitch project, add ` "glitch-zenpoint-repl": "github:jonathan-an
         }
     }
 
+express
+====
 
-and place this line just before your `app.listen` line in server.js
+place this line just before your `app.listen` line in server.js
 
 
-    require("glitch-zenpoint-repl").express(app,express); 
+    require("glitch-zenpoint-repl").express(app,express,{ myVar : "something you want in the REPL context"}); 
+
+
+fastify
+====
+
+place this line just before your `app.listen` line in server.js
+
+
+  require("glitch-zenpoint-repl").fastify(fastify,{ myVar : "something you want in the REPL context"}); 
+
 
 
 .env options (values shown here are the defaults, so if you don't set them, that's what you get)
