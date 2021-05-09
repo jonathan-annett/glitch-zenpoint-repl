@@ -17,6 +17,25 @@ and place this line just before your `app.listen` line in server.js
     require("glitch-zenpoint-repl").express(app,express); 
 
 
+.env options (values shown here are the defaults, so if you don't set them, that's what you get)
+```bash
+REPL_PORT=1976
+REPL_HISTORY=/app/.repl.history
+```
+
+
+technical / security considerations:
+
+* the repl server only lets you run one repl a time, this is by design. most recently opened wins.
+* the server currently only accepts connections from local host: 
+     `connect_ips: [ '::ffff:127.0.0.1','127.0.0.1' ]` 
+* the telnet client that gets started by /app/repl communicates with the repl server in node using clear text, **however**, since the `/app/repl` script is running in a ssh in the server process, it's as secure as any text based app runing in linux on the host.
+* it's unlikely you'd be able to connect from outside of the glitch server network, so adding an external ip to `connect_ips` wpuld most likely fail, but you need to know that sending clear text over the open internet would be an issue. 
+* having said that, since your `server.js` task is serving http, and is transparently proxied by glitch to give you https access, it's about as secure as your glitch site is.
+
+
+
+
 
 original documentation
 
