@@ -31,7 +31,7 @@ place this line just before your `fastify.listen` line in server.js
 .env options (values shown here are the defaults, so if you don't set them, that's what you get)
 ```bash
 REPL_PORT=1976
-REPL_HISTORY=/app/.repl.history
+REPL_HISTORY=/app/.repl_history
 ```
 
 using the console
