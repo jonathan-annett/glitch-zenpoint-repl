@@ -26,11 +26,28 @@ place this line just before your `app.listen` line in server.js
   require("glitch-zenpoint-repl").fastify(fastify,{ myVar : "something you want in the REPL context"}); 
 
 
-
 .env options (values shown here are the defaults, so if you don't set them, that's what you get)
 ```bash
 REPL_PORT=1976
 REPL_HISTORY=/app/.repl.history
+```
+
+using the console
+---
+
+### console.log() -> log()
+
+console.log cannot be used because its output goes right to the process' stdout.
+Instead use the log() function
+```js
+log('this is this', this);
+```
+
+### inspect depth
+
+The depth of the inspection usd by log() can be tuned with the d() function
+```js
+d(4);
 ```
 
 
@@ -43,11 +60,7 @@ technical / security considerations:
 * it's unlikely you'd be able to connect from outside of the glitch server network, so adding an external ip to `connect_ips` wpuld most likely fail, but you need to know that sending clear text over the open internet would be an issue. 
 * having said that, since your `server.js` task is serving http, and is transparently proxied by glitch to give you https access, it's about as secure as your glitch site is.
 
-
-
-
-
-original documentation
+(from the [original documentation](https://github.com/ploki/Zenpoint#readme)...)
 
 # Zenpoint
 
@@ -56,29 +69,6 @@ An open window into your running nodejs code.
 This module creates a very convenient REPL session served
 through the telnet protocol.
 
-# Usage example
-
-## Place a zenpoint in your code
-```js
-function mycode(var1, var2, var3) {
-    require('zenpoint')({
-        listen: 1976,
-        inspectDepth: 0,
-        persist: false,
-        context: {
-            var1,
-            var2,
-            var3,
-        },
-    });
-
-    // ... do some unrelated work here
-    return 42;
-}
-
-mycode('zenpoint', 'the debugging helper', 'for zen fellas');
-
-```
 
 ## Telnet the Zenpoint server
 
