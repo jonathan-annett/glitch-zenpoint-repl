@@ -22,7 +22,7 @@ place this line just before your `app.listen` line in server.js
 fastify
 ---
 
-place this line just before your `app.listen` line in server.js
+place this line just before your `fastify.listen` line in server.js
 
 
   require("glitch-zenpoint-repl").fastify(fastify,{ myVar : "something you want in the REPL context"}); 
