@@ -14,8 +14,7 @@ to add to your glitch project, add ` "glitch-zenpoint-repl": "github:jonathan-an
 and place this line just before your `app.listen` line in server.js
 
 
-    require("glitch-zenpoint-repl")(app,express); 
-
+    require("glitch-zenpoint-repl").express(app,express); 
 
 
 
