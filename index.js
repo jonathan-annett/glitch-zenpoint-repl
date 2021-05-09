@@ -313,9 +313,10 @@ function glitchREPL(context,port) {
        
     fs.writeFile('/app/repl',`#/bin/bash\n\nsource /app/.env\ntelnet localhost ${opts.listen}\necho "use /app/repl restart the REPL"`,function (){
        fs.chmod('/app/repl', 0o777, function (){
-           fs.writeFile('/app/.profile',`#/bin/bash\n\n/app/repl`,function (){
-                
-            });
+           if (opts.disable_auto_start)
+             fs.unlink('/app/.profile',function (){ });
+           else  
+             fs.writeFile('/app/.profile',`#/bin/bash\n\n/app/repl`,function (){ });
           });
     });
 
@@ -332,4 +333,14 @@ zenpoint.express = function(app,express,cont) {
   glitchREPL(context,process.env.REPL_PORT);
   
 } ; 
+
+zenpoint.fastify = function(fastify,cont) {
+  
+  const context = cont || {};
+  context.fastify = fastify;  
+    
+  glitchREPL(context,process.env.REPL_PORT);
+  
+} ; 
+
 
