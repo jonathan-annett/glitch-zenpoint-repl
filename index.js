@@ -84,6 +84,23 @@ let processTopLevelAwait;
 const experimentalREPLAwait = false;
 const path = require ("path");
 
+ function prepareSocket(socket,cb) {
+     let count = 0,done=false; 
+     const waitfor = function(data){
+         if (done) return;
+         count += data.length;
+         if (count > 5) {
+            socket.off('data',waitfor);
+            cb();
+         }
+     };
+    socket.isTTY = true;
+    // IAC WILL ECHO IAC WILL SUPPRESS_GO_AHEAD IAC WONT LINEMODE
+        
+    socket.on('data',waitfor);
+    socket.write(Buffer.from([255, 251, 1, 255, 251, 3, 255, 252, 34]));  
+}
+
  
   
 function zenpoint(options) {
@@ -147,10 +164,11 @@ function zenpoint(options) {
                     connection = socket;
                     console.log('accepted REPL connection from:',socket.remoteAddress);
                  }
-                socket.isTTY = true;
-                // IAC WILL ECHO IAC WILL SUPPRESS_GO_AHEAD IAC WONT LINEMODE
-                socket.write(Buffer.from([255, 251, 1, 255, 251, 3, 255, 252, 34]));
-                socket.write(
+                
+                  prepareSocket(socket,function(){
+              
+                 
+                    socket.write(
                     '🐀🧘🐁 Welcome to the Zenpoint 🥑🐦🦐' + netEOL +
                         stack + netEOL+ netEOL+
                     'use Ctrl-D to exit to the Glitch Terminal' + netEOL + netEOL);
@@ -254,7 +272,8 @@ function zenpoint(options) {
                   customEval.wrapped = cmd.eval;
                   cmd.eval = customEval;
                 }
-              
+                      
+               });
             } catch (e) {
                 console.log(e);
                 if (!socket.elsewhere) {
