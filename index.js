@@ -152,7 +152,8 @@ function zenpoint(options) {
                 socket.write(Buffer.from([255, 251, 1, 255, 251, 3, 255, 252, 34]));
                 socket.write(
                     '🐀🧘🐁 Welcome to the Zenpoint 🥑🐦🦐' + netEOL +
-                        stack);
+                        stack+netEOL+
+                    'use Ctrl-D to exit to the Glitch Terminal');
          
                 var cmd = repl.start({
                     ...replOptions,
@@ -232,7 +233,7 @@ function glitchREPL(context,port) {
     
     zenpoint.rsrv = zenpoint(opts);
        
-    fs.writeFile('/app/repl',`#/bin/bash\n\nsource /app/.env\ntelnet localhost ${opts.listen}`,function (){
+    fs.writeFile('/app/repl',`#/bin/bash\n\nsource /app/.env\ntelnet localhost ${opts.listen}\necho "use /app/repl restart the REPL'`,function (){
        fs.chmod('/app/repl', 0o777, function (){
            fs.writeFile('/app/.profile',`#/bin/bash\n\n/app/repl`,function (){
                 
