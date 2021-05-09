@@ -1,5 +1,7 @@
 # glitch-zenpoint-repl
 
+[![](http://img.youtube.com/vi/7MX008PjeK8/0.jpg)](http://www.youtube.com/watch?v=7MX008PjeK8 "")
+
 based on zenpoint (see below)
 
 to add to your glitch project, add ` "glitch-zenpoint-repl": "github:jonathan-annett/glitch-zenpoint-repl"` to package.json:
@@ -11,7 +13,7 @@ to add to your glitch project, add ` "glitch-zenpoint-repl": "github:jonathan-an
     }
 
 express ( [see demo](https://glitch.com/embed/#!/embed/glitch-zenpoint-repl?path=package.json&previewSize=0&attributionHidden=true) )
--
+---
 place this line just before your `app.listen` line in server.js
 
 
