@@ -312,7 +312,7 @@ function glitchREPL(context,port) {
     zenpoint.rsrv = zenpoint(opts);
        
     fs.writeFile('/app/repl',`#/bin/bash\n\nsource /app/.env\ntelnet localhost ${
-                  process.env.REPL_PORT ===   opts.listen ?    "$REPL_PORT" :    opts.listen
+                  process.env.REPL_PORT ==   opts.listen ?    "$REPL_PORT" :    opts.listen
                  }\necho "use /app/repl restart the REPL"`,function (){
        fs.chmod('/app/repl', 0o777, function (){
            if (opts.disable_auto_start)
