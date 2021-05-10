@@ -17,7 +17,7 @@ const util = require("util");//was not in github version for some reason
 const regexEOL = /\r?\n/g;
 const netEOL = '\r\n';
 
-const restart_flag = '/app/.repl.restart'; fs.writeFile(restart_flag,'0',function(){});
+const restart_flag = '/app/.repl.restart'; fs.unlink(restart_flag,function(){});
 
 
 const inspectOptions = {
@@ -186,6 +186,7 @@ function zenpoint(options) {
                        connection.end();
                       
                     }
+                    fs.writeFile(restart_flag,'0',function(){});
                     connection = socket;
                     console.log('accepted REPL connection from:',socket.remoteAddress);
                  }
