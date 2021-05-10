@@ -262,19 +262,17 @@ function zenpoint(options) {
                       },
                       restart : {
                          get : function (){
-
-                            replMsg("Restarting the server process. This will drop you out of the REPL");
-                            process.exit();
-
-                            connection.elsewhere=true;
-                            connection.end();
-                            connection=false;
                              
                             fs.writeFile(restart_flag,Date.now().toString(),function(){
-                               replMsg('Server Restarting');
-                               setTimeout(process.exit, 1000, 0);
+                                replMsg("Restarting the server process. This will drop you out of the REPL");
+                                setTimeout(process.exit, 1000, 0);
+                                connection.elsewhere=true;
+                                connection.end();
+                                connection=false;
+
                             }); 
-                            return function(){
+              
+                             return function(){
                                return "dumping connection";
                            };
                          },
