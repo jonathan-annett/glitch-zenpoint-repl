@@ -141,10 +141,15 @@ function zenpoint(options) {
           }
         };
         let connection;
-        const replMsg = function  (msg) {
+        const replMsg = function  (msg,toConsole) {
            if (connection && msg) {
                if (!connection.elsewhere) connection.write(msg+netEOL);  
            }
+           switch (toConsole) {
+               case true: return msg ? console.log(msg) : false;
+               case "norepl": 
+                   return (!connection && msg) ? console.log(msg):false;
+           }      
         };
         
         const restartWithNotify = function (msg,cb) {
