@@ -146,6 +146,18 @@ function zenpoint(options) {
                if (!connection.elsewhere) connection.write(msg+netEOL);  
            }
         };
+        
+        const restartWithNotify = function (msg,cb) {
+             fs.writeFile(restart_flag,Date.now().toString(),function(){
+                replMsg(msg);
+                setTimeout(process.exit, 1000, 0);
+                connection.elsewhere=true;
+                connection.end();
+                connection=false;
+                if (typeof cb==='function') cb();
+            }); 
+        };      
+        
         const srv = net.createServer(function (socket) {
             try {
                  socket.on('error',function(e){
@@ -243,18 +255,12 @@ function zenpoint(options) {
                      refresh : {
                          get : function (){
 
-                          
-                            fs.writeFile(restart_flag,Date.now().toString(),function(){
-                                    replMsg("Refreshing the glitch browser, The REPL will restart shortly");
-                                    const { execFile } = require('child_process');
-                                    const child = execFile('/usr/bin/refresh', [], (error, stdout, stderr) => {
-                                      if (error) {
-                                        throw error;
-                                      }
-                                      console.log(stdout);
-                                      process.exit();  
-                                    }); 
+                            restartWithNotify ("Refreshing the glitch browser, The REPL will restart shortly",function(){
+                                const child = require('child_process').execFile('/usr/bin/refresh', [], function (error, stdout, stderr) {
+                                     process.exit();  
+                                }); 
                             });
+                             
                             return function(){
                                return "refreshing browser";
                            }; 
@@ -264,15 +270,8 @@ function zenpoint(options) {
                       restart : {
                          get : function (){
                              
-                            fs.writeFile(restart_flag,Date.now().toString(),function(){
-                                replMsg("Restarting the server process. The REPL will restart shortly");
-                                setTimeout(process.exit, 1000, 0);
-                                connection.elsewhere=true;
-                                connection.end();
-                                connection=false;
-
-                            }); 
-              
+                             restartWithNotify("Restarting the server process. The REPL will restart shortly");
+                             
                              return function(){
                                return "dumping connection";
                            };
@@ -304,7 +303,8 @@ function zenpoint(options) {
             connection=undefined;
             srv.close();
          },
-         message : replMsg 
+         message : replMsg,
+         restart : restartWithNotify 
        }
     }
 }
@@ -368,7 +368,7 @@ zenpoint.express = function(app,express,cont) {
   context.app = app;
   context.express = express;  
     
-  glitchREPL(context,process.env.REPL_PORT);
+  return glitchREPL(context,process.env.REPL_PORT);
   
 } ; 
 
@@ -377,7 +377,7 @@ zenpoint.fastify = function(fastify,cont) {
   const context = cont || {};
   context.fastify = fastify;  
     
-  glitchREPL(context,process.env.REPL_PORT);
+  return glitchREPL(context,process.env.REPL_PORT);
   
 } ; 
 
