@@ -311,7 +311,9 @@ function zenpoint(options) {
 
 module.exports = zenpoint;
 
-function writeReplBash (port,cb) {
+function writeReplBash (opts,cb) {
+   opts=opts||{listen: process.env.REPL_PORT||1976};
+    
   fs.writeFile('/app/repl',`#/bin/bash
 
 
@@ -340,7 +342,7 @@ function waitServer {
 }
 
 function goREPL {
-  telnet localhost ${  process.env.REPL_PORT ==   port ?    "$REPL_PORT" :    opts.listen   }
+  telnet localhost ${  process.env.REPL_PORT ==   opts.listen ?    "$REPL_PORT" :    opts.listen   }
 }
 
 waitREPL
@@ -377,7 +379,7 @@ function glitchREPL(context,port) {
     };
     
     zenpoint.rsrv = zenpoint(opts);
-    writeReplBash(opts.listen,function(){ });
+    writeReplBash(opts,function(){ });
     return zenpoint.rsrv ;
 }
 
