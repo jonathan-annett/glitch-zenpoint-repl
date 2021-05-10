@@ -243,7 +243,7 @@ function zenpoint(options) {
                      refresh : {
                          get : function (){
 
-                            replMsg("Refreshing the glitch browser, This will drop you out of the REPL");
+                            replMsg("Refreshing the glitch browser, The REPL will restart shortly");
                             fs.writeFile(restart_flag,Date.now().toString(),function(){}); 
                              
                             const { execFile } = require('child_process');
@@ -252,7 +252,7 @@ function zenpoint(options) {
                                 throw error;
                               }
                               console.log(stdout);
-                                
+                              process.exit();  
                             }); 
                             return function(){
                                return "refreshing browser";
@@ -264,7 +264,7 @@ function zenpoint(options) {
                          get : function (){
                              
                             fs.writeFile(restart_flag,Date.now().toString(),function(){
-                                replMsg("Restarting the server process. This will drop you out of the REPL");
+                                replMsg("Restarting the server process. The REPL will restart shortly");
                                 setTimeout(process.exit, 1000, 0);
                                 connection.elsewhere=true;
                                 connection.end();
@@ -323,18 +323,23 @@ function glitchREPL(context,port) {
     zenpoint.rsrv = zenpoint(opts);
        
       
-    fs.writeFile('/app/repl',`#/bin/bash
+       fs.writeFile('/app/repl',`#/bin/bash
+
 
 source /app/.env
 
 telnet localhost ${  process.env.REPL_PORT ==   opts.listen ?    "$REPL_PORT" :    opts.listen   }
 
-while [ -f ${restart_flag} ]
+while [ -f ${restart_flag}  ]
 do
+
+     echo -n "waiting for server to restart.."
      while [ -f  ${restart_flag}  ]
      do
-        sleep 3
+        sleep 1
+        echo -n "."
      done
+     echo "restarted"
 
      source /app/.env
 
@@ -342,13 +347,13 @@ do
 done
 
 echo "use /app/repl restart the REPL"
-
+                 
                  `,function (){
        fs.chmod('/app/repl', 0o777, function (){
            if (opts.disable_auto_start)
              fs.unlink('/app/.profile',function (){ });
            else  
-             fs.writeFile('/app/.profile',"#/bin/bash\n\n/app/repl",function (){ });
+             fs.writeFile('/app/.profile',`#/bin/bash\n\n/app/repl`,function (){ });
           });
     });
 
