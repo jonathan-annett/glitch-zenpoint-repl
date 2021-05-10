@@ -17,7 +17,7 @@ const util = require("util");//was not in github version for some reason
 const regexEOL = /\r?\n/g;
 const netEOL = '\r\n';
 
-const restart_flag = '/app/.repl.restart'; fs.unlink(restart_flag,function(){});
+const restart_flag = '/app/.repl.restart'; fs.writeFile(restart_flag,'0',function(){});
 
 
 const inspectOptions = {
@@ -208,7 +208,7 @@ function zenpoint(options) {
                       }
                     }).on('exit', () => {
                     if (!socket.elsewhere) {
-                   
+                    
                        socket.write(chalk.gray('exit')+cr(os.EOL));
                        socket.end();
                      
@@ -246,6 +246,7 @@ function zenpoint(options) {
 
                     exit : {
                          get : function (){
+                             fs.unlink(restart_flag,function(){});
 
                             replMsg("Tip : To exit, you can use Ctrl - D");
                             connection.elsewhere=true;
