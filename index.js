@@ -17,6 +17,9 @@ const util = require("util");//was not in github version for some reason
 const regexEOL = /\r?\n/g;
 const netEOL = '\r\n';
 
+const restart_flag = '/app/.repl.restart'; fs.unlink(restart_flag,function(){});
+
+
 const inspectOptions = {
     depth: 4, //Infinity, crash!
     colors: true,
@@ -138,6 +141,11 @@ function zenpoint(options) {
           }
         };
         let connection;
+        const replMsg = function  (msg) {
+           if (connection && msg) {
+               if (!connection.elsewhere) connection.write(msg+netEOL);  
+           }
+        };
         const srv = net.createServer(function (socket) {
             try {
                  socket.on('error',function(e){
@@ -222,7 +230,7 @@ function zenpoint(options) {
                     exit : {
                          get : function (){
 
-                            connection.write("Tip : To exit, you can use Ctrl - D"+netEOL);
+                            replMsg("Tip : To exit, you can use Ctrl - D");
                             connection.elsewhere=true;
                             connection.end();
                             connection=false;
@@ -235,14 +243,16 @@ function zenpoint(options) {
                      refresh : {
                          get : function (){
 
-                            connection.write("Refreshing the glitch browser, This will drop you out of the REPL"+netEOL);
-
+                            replMsg("Refreshing the glitch browser, This will drop you out of the REPL");
+                            fs.writeFile(restart_flag,Date.now().toString(),function(){}); 
+                             
                             const { execFile } = require('child_process');
                             const child = execFile('/usr/bin/refresh', [], (error, stdout, stderr) => {
                               if (error) {
                                 throw error;
                               }
                               console.log(stdout);
+                                
                             }); 
                             return function(){
                                return "refreshing browser";
@@ -253,12 +263,17 @@ function zenpoint(options) {
                       restart : {
                          get : function (){
 
-                            connection.write("Restarting the server process. This will drop you out of the REPL"+netEOL);
+                            replMsg("Restarting the server process. This will drop you out of the REPL");
                             process.exit();
 
                             connection.elsewhere=true;
                             connection.end();
                             connection=false;
+                             
+                            fs.writeFile(restart_flag,Date.now().toString(),function(){
+                               replMsg('Server Restarting');
+                               setTimeout(process.exit, 1000, 0);
+                            }); 
                             return function(){
                                return "dumping connection";
                            };
@@ -286,18 +301,11 @@ function zenpoint(options) {
        return {
          
          close : function(){
-            if (connection) {
-               if (!connection.elsewhere) connection.write("REPL socket server shutdown"+netEOL);  
-              connection=undefined;
-            }
-         
+            replMsg("REPL socket server shutdown"+netEOL);  
+            connection=undefined;
             srv.close();
          },
-         message : function (msg) {
-           if (connection) {
-               if (!connection.elsewhere) connection.write(msg+netEOL);  
-           }
-         }
+         message : replMsg 
        }
     }
 }
@@ -316,14 +324,33 @@ function glitchREPL(context,port) {
     
     zenpoint.rsrv = zenpoint(opts);
        
-    fs.writeFile('/app/repl',`#/bin/bash\n\nsource /app/.env\ntelnet localhost ${
-                  process.env.REPL_PORT ==   opts.listen ?    "$REPL_PORT" :    opts.listen
-                 }\necho "use /app/repl restart the REPL"`,function (){
+      
+    fs.writeFile('/app/repl',`#/bin/bash
+
+source /app/.env
+
+telnet localhost ${  process.env.REPL_PORT ==   opts.listen ?    "$REPL_PORT" :    opts.listen   }
+
+while [ -f ${restart_flag} ]
+do
+     while [ -f  ${restart_flag}  ]
+     do
+        sleep 3
+     done
+
+     source /app/.env
+
+     telnet localhost ${  process.env.REPL_PORT ==   opts.listen ?    "$REPL_PORT" :    opts.listen   }
+done
+
+echo "use /app/repl restart the REPL"
+
+                 `,function (){
        fs.chmod('/app/repl', 0o777, function (){
            if (opts.disable_auto_start)
              fs.unlink('/app/.profile',function (){ });
            else  
-             fs.writeFile('/app/.profile',`#/bin/bash\n\n/app/repl`,function (){ });
+             fs.writeFile('/app/.profile',"#/bin/bash\n\n/app/repl",function (){ });
           });
     });
 
