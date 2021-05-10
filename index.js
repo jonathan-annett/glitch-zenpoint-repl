@@ -311,6 +311,61 @@ function zenpoint(options) {
 
 module.exports = zenpoint;
 
+function writeReplBash (cb) {
+  fs.writeFile('/app/repl',`#/bin/bash
+
+
+source /app/.env
+
+function waitREPL {
+  nc -z 127.0.0.1 $REPL_PORT  && return 0
+  echo -n "waiting for REPL service to come online..."
+  until nc -z 127.0.0.1 $REPL_PORT
+  do 
+      echo -n .
+      sleep 1
+  done
+  echo "ready"
+}
+
+function waitServer {
+     [ -f  ${restart_flag}  ] || return 0
+     echo -n "waiting for server to restart.."
+     while [ -f  ${restart_flag}  ]
+     do
+        sleep 1
+        echo -n "."
+     done
+     echo "restarted"
+}
+
+function goREPL {
+  telnet localhost ${  process.env.REPL_PORT ==   opts.listen ?    "$REPL_PORT" :    opts.listen   }
+}
+
+waitREPL
+goREPL
+
+
+while [ -f ${restart_flag}  ]
+do
+     waitServer
+     waitREPL
+     source /app/.env
+     goREPL
+done
+
+echo "use /app/repl to re-enter the REPL (server is still running)" `,function (){
+       fs.chmod('/app/repl', 0o777, function (){
+           if (opts.disable_auto_start)
+             fs.unlink('/app/.profile',cb);
+           else  
+             fs.writeFile('/app/.profile',`#/bin/bash\n\n/app/repl`,cb);
+          });
+    });   
+    
+}
+
 function glitchREPL(context,port) {
     context = context || {};
     const opts = {
@@ -322,42 +377,7 @@ function glitchREPL(context,port) {
     };
     
     zenpoint.rsrv = zenpoint(opts);
-       
-      
-       fs.writeFile('/app/repl',`#/bin/bash
-
-
-source /app/.env
-
-telnet localhost ${  process.env.REPL_PORT ==   opts.listen ?    "$REPL_PORT" :    opts.listen   }
-
-while [ -f ${restart_flag}  ]
-do
-
-     echo -n "waiting for server to restart.."
-     while [ -f  ${restart_flag}  ]
-     do
-        sleep 1
-        echo -n "."
-     done
-     echo "restarted"
-
-     source /app/.env
-
-     telnet localhost ${  process.env.REPL_PORT ==   opts.listen ?    "$REPL_PORT" :    opts.listen   }
-done
-
-echo "use /app/repl restart the REPL"
-                 
-                 `,function (){
-       fs.chmod('/app/repl', 0o777, function (){
-           if (opts.disable_auto_start)
-             fs.unlink('/app/.profile',function (){ });
-           else  
-             fs.writeFile('/app/.profile',`#/bin/bash\n\n/app/repl`,function (){ });
-          });
-    });
-
+    writeReplBash(function(){ });
     return zenpoint.rsrv ;
 }
 
@@ -380,5 +400,7 @@ zenpoint.fastify = function(fastify,cont) {
   return glitchREPL(context,process.env.REPL_PORT);
   
 } ; 
+
+zenpoint.writeReplBash = writeReplBash;
 
 
