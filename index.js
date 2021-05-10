@@ -243,20 +243,21 @@ function zenpoint(options) {
                      refresh : {
                          get : function (){
 
-                            replMsg("Refreshing the glitch browser, The REPL will restart shortly");
-                            fs.writeFile(restart_flag,Date.now().toString(),function(){}); 
-                             
-                            const { execFile } = require('child_process');
-                            const child = execFile('/usr/bin/refresh', [], (error, stdout, stderr) => {
-                              if (error) {
-                                throw error;
-                              }
-                              console.log(stdout);
-                              process.exit();  
-                            }); 
+                          
+                            fs.writeFile(restart_flag,Date.now().toString(),function(){
+                                    replMsg("Refreshing the glitch browser, The REPL will restart shortly");
+                                    const { execFile } = require('child_process');
+                                    const child = execFile('/usr/bin/refresh', [], (error, stdout, stderr) => {
+                                      if (error) {
+                                        throw error;
+                                      }
+                                      console.log(stdout);
+                                      process.exit();  
+                                    }); 
+                            });
                             return function(){
                                return "refreshing browser";
-                           };
+                           }; 
                          },
                          enumerable : false
                       },
