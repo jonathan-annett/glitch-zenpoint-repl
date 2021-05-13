@@ -211,6 +211,7 @@ function zenpoint(options) {
                     if (!socket.elsewhere) {
                     
                        socket.write(chalk.gray('exit')+cr(os.EOL));
+                       fs.unlink(restart_flag,function(){});
                        socket.end();
                      
                        connection=undefined;
