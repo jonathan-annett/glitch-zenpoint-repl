@@ -178,15 +178,14 @@ function zenpoint(options) {
                  } else {
                    
                     if (connection) {
-                       if (connection===socket) {
-                         console.log("connection===socket!");
-                       }
                        connection.elsewhere=true;
                        connection.write("REPL started elsewhere\n");
+                       fs.unlink(restart_flag,function(){});
                        connection.end();
-                      
-                    }
-                    fs.writeFile(restart_flag,'0',function(){});
+                     }
+                     // give disconnecting socket 2 seconds to exit the bash loop.
+                     setTimeout(fs.writeFile,2000,restart_flag,'0',function(){});
+                     
                     connection = socket;
                     console.log('accepted REPL connection from:',socket.remoteAddress);
                  }
