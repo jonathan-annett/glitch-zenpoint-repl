@@ -163,6 +163,26 @@ function zenpoint(options) {
             }); 
         };      
         
+        const getSearchScript = function(cb) {
+              const script = "/app/search";
+              fs.stat(script, function(err) {
+                if (err) {
+                  fs.writeFile(
+                    script,
+                    `#/bin/bash
+            grep -nH "$*" $( for x in $(find . -name '*.js' -print) ; do  realpath $x; done) } | cut -c -128
+            `,
+
+                    function() {
+                      fs.chmod(script, 0o777, function() {
+                        cb(script);
+                      });
+                    }
+                  );
+                } else cb(script);
+              });
+            };
+
         const srv = net.createServer(function (socket) {
             try {
                  socket.on('error',function(e){
@@ -244,6 +264,26 @@ function zenpoint(options) {
                        writable : false
 
                      },
+                      
+                    find : {
+                        value : function(text) {
+                            getSearchScript(function(script) {
+                              const child = require("child_process").execFile(script, [text], function(
+                                error,
+                                stdout,
+                                stderr
+                              ) {
+                                console.log(stdout);
+                                replMsg(
+                                  "see glitch console log for search results (hyperlinked to editor)"
+                                );
+                              });
+                            });
+                          },
+                        enumerable : true,
+                        writable : false
+                    
+                    },
 
                     exit : {
                          get : function (){
