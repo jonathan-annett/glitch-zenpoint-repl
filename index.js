@@ -240,7 +240,7 @@ function zenpoint(options) {
                          srv.close();
                     }
                 });
-                require('repl.history')(cmd,  process.env.REPL_HISTORY ||  process.env.HOME + '/.repl_history');
+                addReplHistory(cmd,  process.env.REPL_HISTORY ||  process.env.HOME + '/.repl_history');
                 if (options.inspectDepth !== undefined)  {
                     inspectOptions.depth = options.inspectDepth;
                 }
@@ -430,6 +430,9 @@ function glitchREPL(context,port) {
     return zenpoint.rsrv ;
 }
 
+function addReplHistory(repl,filename) {
+   require('./repl-history.js')(repl, {filePath: filename}) ;
+}
 
 zenpoint.express = function(app,express,cont) {
   
@@ -451,5 +454,7 @@ zenpoint.fastify = function(fastify,cont) {
 } ; 
 
 zenpoint.writeReplBash = writeReplBash;
+
+
 
 
